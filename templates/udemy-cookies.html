@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Udemy Cookies</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <style>
+        #messageIcon {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            font-size: 30px;
+            color: #f39c12;
+            animation: glowAnimation 1.5s infinite alternate;
+            cursor: pointer;
+        }
+
+        @keyframes glowAnimation {
+            from {
+                text-shadow: 0 0 5px #f39c12, 0 0 10px #f39c12, 0 0 15px #e74c3c, 0 0 20px #e74c3c, 0 0 25px #e74c3c, 0 0 30px #e74c3c, 0 0 35px #e74c3c;
+            }
+            to {
+                text-shadow: 0 0 10px #f39c12, 0 0 20px #f39c12, 0 0 30px #e74c3c, 0 0 40px #e74c3c, 0 0 50px #e74c3c, 0 0 60px #e74c3c, 0 0 70px #e74c3c;
+            }
+        }
+
+        #adminMessage {
+    display: block; /* This should be block, not none. */
+    position: fixed;
+    bottom: -100px; /* Start from this position */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #333;
+    color: white;
+    padding: 15px;
+    border-radius: 10px 10px 0 0;
+    transition: bottom 0.4s;
+}
+
+    </style>
+    <script>
+        // Function to check the cookie's validity
+        function checkValidity(validityDate) {
+            const currentDate = new Date();
+            const [day, month, year] = validityDate.split('/');
+            const validDate = new Date(year, month - 1, day);
+
+            if (currentDate > validDate) {
+                document.getElementById('expiredMessage').style.display = 'block';
+                document.getElementById('cookieContent').style.display = 'none';
+            } else {
+                document.getElementById('expiredMessage').style.display = 'none';
+                document.getElementById('cookieContent').style.display = 'block';
+            }
+        }
+
+        window.onload = function () {
+            const validityDate = "{{ valid_upto }}"; // Date fetched from the backend
+            checkValidity(validityDate);
+        }
+        // Function to display the admin message
+        function showMessage() {
+            const messageDiv = document.getElementById('adminMessage');
+            if (messageDiv.style.bottom === "0px") {
+                messageDiv.style.bottom = "-100px";
+            } else {
+                messageDiv.style.bottom = "0px";
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h3 id="cookieContent">Current Cookies Valid upto: {{ valid_upto }}</h3>
+        <div class="row align-items-center mb-2">
+            <div class="col-md-6">
+                <button onclick="copyToClipboard()" class="btn btn-success">Copy</button>
+            </div>
+            <div class="col-md-6 text-right">
+                <a href="/how-to-use" class="btn btn-info">How to Use</a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <textarea id="content" class="form-control" rows="20" readonly>{{ content }}</textarea> <!-- Increased rows value -->
+            </div>
+        </div>
+    
+        <div id="expiredMessage" class="alert alert-danger mt-4" style="display:none;">
+            Validity of current cookie expired, please wait or contact admin to update the cookies.
+        </div>
+    </div>
+    {% if admin_message %}
+    <div id="adminMessage">
+        <strong>Message from Admin:</strong> {{ admin_message }}
+    </div>
+    <div id="messageIcon" onclick="showMessage()">📧</div>
+    {% endif %}
+    
+
+    <!-- The rest remains the same... -->
+</body>
+
+</html>
